@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    #tab {
+        width: 800px;
+        overflow: hidden;
+        border-radius: 5px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .clearfix::after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .tab-labels {
+        list-style: none;
+        background-color: #949BB7;
+        border-radius: 5px 5px 0 0;
+        color: rgba(255, 255, 255, .8);
+    }
+
+    .tab-labels li {
+        float: left;
+        padding: 10px 15px;
+    }
+
+    .tab-labels li:hover {
+        background-color: #384475;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 1);
+    }
+
+    .tab-labels .active {
+        background-color: #1A2554;
+        color: #fff;
+    }
+
+    .tab-labels .active:hover {
+        background-color: rgba(26, 37, 84, .8);
+    }
+
+    .tab-content [content-id] {
+        display: none;
+    }
+
+    .tab-content .active {
+        display: block;
+    }
+
+    .tab-content {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px #949BB7 solid;
+        border-radius: 0 0 5px 5px;
+        border-top: none;
+    }
+</style>
+
+<body>
+    <div id="tab">
+        <ul class="tab-labels clearfix">
+            <li class="active" tab-id="1">历史记录</li>
+            <li tab-id="2">人员变更</li>
+            <li tab-id="3">闻道有先后</li>
+            <li tab-id="4">创业有风险</li>
+            <li tab-id="5">少时诵诗书</li>
+        </ul>
+        <div class="tab-content">
+            <div class="active" content-id="1">历史记录</div>
+            <div content-id="2">人员变更</div>
+            <div content-id="3">人员变更</div>
+            <div content-id="4">人员变更</div>
+            <div content-id="5">人员变更</div>
+        </div>
+    </div>
+
+    <div id="a">
+            <ul class="tab-labels clearfix">
+                <li class="active" tab-id="1">历史记录</li>
+                <li tab-id="2">人员变更</li>
+                <li tab-id="3">闻道有先后</li>
+                <li tab-id="4">创业有风险</li>
+                <li tab-id="5">少时诵诗书</li>
+            </ul>
+            <div class="tab-content">
+                <div class="active" content-id="1">历史记录</div>
+                <div content-id="2">人员变更</div>
+                <div content-id="3">人员变更</div>
+                <div content-id="4">人员变更</div>
+                <div content-id="5">人员变更</div>
+            </div>
+        </div>
+</body>
+<script src="../plug-in/jquery.js"></script>
+<script>
+    
+    // $('.tab-labels li').click(function () {
+    //     let that = $(this)
+    //     let contentID = that.attr('tab-id')
+    //     if (contentID !== prev) {
+    //         let tabContent = that.parents('.tab-labels').siblings('.tab-content')
+    //         that.siblings('[tab-id=' + prev + ']').removeClass('active')
+    //         that.addClass('active')
+    //         tabContent.children('[content-id=' + contentID + ']').show(100)
+    //         tabContent.children('[content-id=' + prev + ']').hide(100)
+    //         prev = contentID;
+    //     }
+    // });
+    (function ($) {
+        $.fn.tab = function () {
+            let prev = '1'
+            this.children('.tab-labels').on('click', 'li', function () {
+                let that = $(this)
+                let contentID = that.attr('tab-id')
+                if (contentID !== prev) {
+                    let tabContent = that.parents('.tab-labels').siblings('.tab-content')
+                    that.siblings('[tab-id=' + prev + ']').removeClass('active')
+                    that.addClass('active')
+                    tabContent.children('[content-id=' + contentID + ']').show(100)
+                    tabContent.children('[content-id=' + prev + ']').hide(100)
+                    prev = contentID;
+                }
+            })
+        }
+    })(jQuery)
+    $('#tab').tab()
+    $('#a').tab()
+</script>
+
+</html>
