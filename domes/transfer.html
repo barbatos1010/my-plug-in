@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<style>
+    #box{
+        border: 1px #ccc solid;
+        width: 100px;
+        height:100px;
+    }
+    #smallBox{
+        border: 1px red solid;
+        width: 50px;
+        height:50px;
+    }
+</style>
+<body>
+    <div id="box" ondrag="drop(event)" ondragover="allowDrop(event)" draggable="true"></div>
+    <div id="smallBox" ondragstart="drag(event)" draggable="true"></div>
+</body>
+<script src="../frame/jquery.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    function drop(e){
+        e.preventDefault()
+        console.log(e,'放')
+    }
+    function drag(e){
+        console.log(e,'拖')
+    }
+    function allowDrop(e){
+        e.preventDefault();
+        console.log(e,'完成')
+    }
+</script>
+</html>
