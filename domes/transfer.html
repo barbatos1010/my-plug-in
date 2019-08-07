@@ -1,42 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<!DOCTYPE HTML>
+<html>
 
+<head>
+    <style type="text/css">
+        ul {
+            width: 200px;
+            float: left;
+        }
+    </style>
 </head>
-<style>
-    #box{
-        border: 1px #ccc solid;
-        width: 100px;
-        height:100px;
-    }
-    #smallBox{
-        border: 1px red solid;
-        width: 50px;
-        height:50px;
-    }
-</style>
+
 <body>
-    <div id="box" ondrag="drop(event)" ondragover="allowDrop(event)" draggable="true"></div>
-    <div id="smallBox" ondragstart="drag(event)" draggable="true"></div>
+    <input type="text" id="search" />
+    <button id="searchBtn">搜索</button>
+    <button id="refresh">刷新</button>
+    <ul id="left">
+
+    </ul>
+    <button id="rightBtn">》》》</button>
+    <button id="leftBtn">《《《</button>
+    <button id="topBtn" disabled="disabled">上</button>
+    <button id="bottomBtn" disabled="disabled">下</button>
+    
+    <ul id="right">
+
+    </ul>
 </body>
 <script src="../frame/jquery.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
-    function drop(e){
-        e.preventDefault()
-        console.log(e,'放')
+    var arr = [
+        {
+            name: '王德发'
+        },
+        {
+            name: '刘德华'
+        },
+        {
+            name: '张学友'
+        },
+        {
+            name: '黎明'
+        }
+    ]
+    var scorecard = 0;
+    function traversal(list,id) {
+        list.forEach(obj => {
+                var str = `<li><input type="checkbox"/> <span>${obj.name}</span></li>`
+                $('#'+id+'').append(str)
+        })
     }
-    function drag(e){
-        console.log(e,'拖')
-    }
-    function allowDrop(e){
-        e.preventDefault();
-        console.log(e,'完成')
-    }
+
+    $(document).ready(function () {
+
+        $('#refresh').click(function(){
+            $('#left').empty()
+            traversal(arr,'left')
+        })
+
+        $('#rightBtn').click(function () {
+            var right = $('#right')
+            $("#left li input[type='checkbox']").each(function () {
+                var that = $(this)
+                if (that.prop('checked')) {
+                    
+                    that.prop('checked', false)
+                    right.append(that.parent())
+                }
+            })
+        })
+
+        $('#searchBtn').click(function () {
+            var searchContent = $('#search').val()
+            var arr1 = arr.filter(function (item) {
+                return item.name.match(searchContent)
+            })
+            if(arr1.length > 0 ){
+                $('#left').empty()
+                traversal(arr1,'left')
+            }
+        })
+
+        $('#leftBtn').click(function () {
+            var left = $('#left')
+            $("#right li input[type='checkbox']").each(function () {
+                var that = $(this)
+                if (that.prop('checked')) {
+                    scorecard--
+                    that.prop('checked', false)
+                    left.append(that.parent())
+                }
+
+            })
+        })
+
+        //
+        $("#right").on('change',"li input[type='checkbox']",function(){
+            if($(this).prop('checked')){
+                $(this).attr('pitchOf','true')
+                scorecard++
+                if(scorecard === 1){
+                    $('#topBtn').removeAttr('disabled')
+                    $('#bottomBtn').removeAttr('disabled')
+                }else{
+                    $('#topBtn').attr('disabled','disabled')
+                    $('#bottomBtn').attr('disabled','disabled')
+                }
+            }else{
+                $(this).attr('pitchOf','false')
+                scorecard--
+                if(scorecard === 0){
+                    $('#topBtn').attr('disabled','disabled')
+                    $('#bottomBtn').attr('disabled','disabled')
+                }else if(scorecard === 1){
+                    $('#topBtn').removeAttr('disabled')
+                    $('#bottomBtn').removeAttr('disabled')
+                }
+            }
+            console.log(scorecard)
+        })
+        $('#topBtn').click(function(){
+            var cur = $('#right').find("[pitchOf='true']").parent()
+            var prev = cur.prev();
+            if(prev.length !== 0 ){
+                prev.before(cur)
+            }else{
+                alert('已经是第一个了')
+            }
+        })
+        $('#bottomBtn').click(function(){
+            var cur = $('#right').find("[pitchOf='true']").parent()
+            var next = cur.next();
+            if(next.length !== 0 ){
+                next.after(cur)
+            }else{
+                alert('已经是最后一个了')
+            }
+        })
+        traversal(arr,'left')
+        traversal(arr,'right')
+    })
 </script>
+
 </html>
