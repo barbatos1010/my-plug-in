@@ -7,28 +7,99 @@
             width: 200px;
             float: left;
         }
+        .left{
+            border: 1px #ccc solid;
+        }
+        .right{
+            border: 1px #ccc solid;
+        }
     </style>
 </head>
 
 <body>
-    <input type="text" id="search" />
-    <button id="searchBtn">搜索</button>
-    <button id="refresh">刷新</button>
-    <ul id="left">
+    <div id="transfer">
+        <input type="text" class="search" />
+        <button class="searchBtn">搜索</button>
+        <button class="refresh">刷新</button>
+        <ul class="left">
 
-    </ul>
-    <button id="rightBtn">》》》</button>
-    <button id="leftBtn">《《《</button>
-    <button id="topBtn" disabled="disabled">上</button>
-    <button id="bottomBtn" disabled="disabled">下</button>
-    
-    <ul id="right">
+        </ul>
+        <button class="rightBtn">》》》</button>
+        <button class="leftBtn">《《《</button>
+        <button class="topBtn">上</button>
+        <button class="bottomBtn">下</button>
 
-    </ul>
+        <ul class="right">
+
+        </ul>
+    </div>
 </body>
 <script src="../frame/jquery.js"></script>
 <script>
-    var arr = [
+    (function ($) {
+        $.fn.transfer = function (data) {
+            new Transfer(this,data)
+        }
+        function Transfer(el, data) {
+            // 元素
+            this.$el = el
+            // 数据
+            this.$data = data
+            //左穿梭框
+            this.$left = el.find('.left')
+            //右穿梭框
+            this.$right = el.find('.right')
+            //初始化勾选数量
+            this.leftCheckeds = 0
+            this.rightCheckeds = 0
+            //移动按钮
+            this.$topBtn = el.find('.topBtn')
+            this.$bottomBtn = el.find('.bottomBtn')
+            this.$leftBtn = el.find('.leftBtn')
+            this.$rightBtn = el.find('.rightBtn')
+            this.init()
+        }
+
+        Transfer.prototype = {
+
+            init: function () {
+                this.disabled('rightBtn')
+                this.disabled('leftBtn')
+                this.disabled('topBtn')
+                this.disabled('bottomBtn')
+                this.load(this.$data,'left')
+
+                this.$left.on('change',"input[type='checkbox']",function(){
+                    
+                })
+            },
+
+            //禁用按钮
+            disabled: function (className) {
+                this['$'+className].attr('disabled', 'disabled')
+            },
+
+            //解除禁用
+            removeDisable: function (className) {
+                this['$'+className].removeAttr('disabled')
+            },
+
+            //item工厂
+            createItem: function (name) {
+                var str = `<li><input type="checkbox"/> <span>${name}</span></li>`
+                return str
+            },
+            //load
+            load: function (list, id) {
+                var arr = []
+                list.forEach(element => {
+                    arr.push(this.createItem(element.name))
+                });
+                this['$'+id].append(arr)
+            }
+        }
+    })(jQuery)
+    $('#transfer').transfer([
         {
             name: '王德发'
         },
@@ -41,104 +112,7 @@
         {
             name: '黎明'
         }
-    ]
-    var scorecard = 0;
-    function traversal(list,id) {
-        list.forEach(obj => {
-                var str = `<li><input type="checkbox"/> <span>${obj.name}</span></li>`
-                $('#'+id+'').append(str)
-        })
-    }
-
-    $(document).ready(function () {
-
-        $('#refresh').click(function(){
-            $('#left').empty()
-            traversal(arr,'left')
-        })
-
-        $('#rightBtn').click(function () {
-            var right = $('#right')
-            $("#left li input[type='checkbox']").each(function () {
-                var that = $(this)
-                if (that.prop('checked')) {
-                    
-                    that.prop('checked', false)
-                    right.append(that.parent())
-                }
-            })
-        })
-
-        $('#searchBtn').click(function () {
-            var searchContent = $('#search').val()
-            var arr1 = arr.filter(function (item) {
-                return item.name.match(searchContent)
-            })
-            if(arr1.length > 0 ){
-                $('#left').empty()
-                traversal(arr1,'left')
-            }
-        })
-
-        $('#leftBtn').click(function () {
-            var left = $('#left')
-            $("#right li input[type='checkbox']").each(function () {
-                var that = $(this)
-                if (that.prop('checked')) {
-                    scorecard--
-                    that.prop('checked', false)
-                    left.append(that.parent())
-                }
-
-            })
-        })
-
-        //
-        $("#right").on('change',"li input[type='checkbox']",function(){
-            if($(this).prop('checked')){
-                $(this).attr('pitchOf','true')
-                scorecard++
-                if(scorecard === 1){
-                    $('#topBtn').removeAttr('disabled')
-                    $('#bottomBtn').removeAttr('disabled')
-                }else{
-                    $('#topBtn').attr('disabled','disabled')
-                    $('#bottomBtn').attr('disabled','disabled')
-                }
-            }else{
-                $(this).attr('pitchOf','false')
-                scorecard--
-                if(scorecard === 0){
-                    $('#topBtn').attr('disabled','disabled')
-                    $('#bottomBtn').attr('disabled','disabled')
-                }else if(scorecard === 1){
-                    $('#topBtn').removeAttr('disabled')
-                    $('#bottomBtn').removeAttr('disabled')
-                }
-            }
-            console.log(scorecard)
-        })
-        $('#topBtn').click(function(){
-            var cur = $('#right').find("[pitchOf='true']").parent()
-            var prev = cur.prev();
-            if(prev.length !== 0 ){
-                prev.before(cur)
-            }else{
-                alert('已经是第一个了')
-            }
-        })
-        $('#bottomBtn').click(function(){
-            var cur = $('#right').find("[pitchOf='true']").parent()
-            var next = cur.next();
-            if(next.length !== 0 ){
-                next.after(cur)
-            }else{
-                alert('已经是最后一个了')
-            }
-        })
-        traversal(arr,'left')
-        traversal(arr,'right')
-    })
+    ])
 </script>
 
 </html>
