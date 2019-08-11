@@ -3,14 +3,53 @@
 
 <head>
     <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #transfer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         ul {
             width: 200px;
-            float: left;
+            /* float: left; */
         }
-        .left{
+
+        .box-top {
+            border-bottom: 1px #ccc solid;
+            line-height: 30px;
+        }
+
+        .left-box,
+        .right-box {
+            float: left;
             border: 1px #ccc solid;
         }
-        .right{
+
+        .controls {
+            float: left;
+        }
+
+        .controls button {
+            display: block;
+        }
+
+        /* .right-box{
+            float: left;
+        } */
+        .clearfix::before {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .right {
             border: 1px #ccc solid;
         }
     </style>
@@ -18,33 +57,48 @@
 
 <body>
     <div id="transfer">
-        <input type="text" class="search" />
-        <button class="searchBtn">搜索</button>
-        <button class="refresh">刷新</button>
-        <ul class="left">
+        <div class="left-box clearfix">
+            <div class="box-top">32/1</div>
+            <div class="search-box">
+                <input type="text" class="search" />
+                <button class="searchBtn">搜索</button>
+            </div>
+            <button class="reset">重置</button>
+            <ul class="left">
 
-        </ul>
-        <button class="rightBtn">》》》</button>
-        <button class="leftBtn">《《《</button>
-        <button class="topBtn">上</button>
-        <button class="bottomBtn">下</button>
+            </ul>
+        </div>
+        <div class="controls">
+            <button class="rightBtn">》》》</button>
+            <button class="leftBtn">《《《</button>
+            <button class="topBtn">上</button>
+            <button class="bottomBtn">下</button>
+        </div>
 
-        <ul class="right">
+        <div class="right-box">
+            <div class="box-top">32/1</div>
+            <div style="display: none" class="placeholder">暂无数据</div>
+            <ul class="right">
 
-        </ul>
+            </ul>
+        </div>
     </div>
 </body>
 <script src="../frame/jquery.js"></script>
 <script>
     (function ($) {
-        $.fn.transfer = function (data) {
-            new Transfer(this,data)
+        $.fn.transfer = function (leftData, rightData) {
+            new Transfer(this, leftData, rightData)
         }
-        function Transfer(el, data) {
+
+        function Transfer(el, leftData, rightData) {
             // 元素
             this.$el = el
             // 数据
-            this.$data = data
+            this.$leftData = leftData
+            this.$rightData = rightData
+            //right-box
+            this.$rightBox = el.find('.right-box')
             //左穿梭框
             this.$left = el.find('.left')
             //右穿梭框
@@ -57,36 +111,124 @@
             this.$bottomBtn = el.find('.bottomBtn')
             this.$leftBtn = el.find('.leftBtn')
             this.$rightBtn = el.find('.rightBtn')
+            //重置按钮
+            this.$resetBtn = el.find('.reset')
             this.init()
         }
 
         Transfer.prototype = {
 
             init: function () {
-                this.disabled('rightBtn')
-                this.disabled('leftBtn')
-                this.disabled('topBtn')
-                this.disabled('bottomBtn')
-                this.load(this.$data,'left')
+                this.initBtn();
+                this.initEvent();
+                this.load(this.$leftData, 'left')
+                this.load(this.$rightData, 'right')
+            },
+            initEvent() {
+                var that = this
 
-                this.$left.on('change',"input[type='checkbox']",function(){
-                    
+                that.$left.on('change', "input[type='checkbox']", function () {
+                    if ($(this).prop('checked')) {
+                        $(this).attr('pitch-of', 'true')
+                        that.leftCheckeds++
+                        if (that.leftCheckeds === 1) {
+                            that.removeDisable(['rightBtn'])
+                        }
+                    } else {
+                        $(this).attr('pitch-of', 'false')
+                        that.leftCheckeds--
+                        if (that.leftCheckeds === 0) {
+                            that.disabled(['rightBtn'])
+                        }
+                    }
+                })
+
+                that.$right.on('change', "input[type='checkbox']", function () {
+                    if ($(this).prop('checked')) {
+                        $(this).attr('pitch-of', 'true')
+                        that.rightCheckeds++
+                        if (that.rightCheckeds === 1) { //当右边选中一个
+                            that.removeDisable(['bottomBtn', 'topBtn', 'leftBtn'])
+                        } else if (that.rightCheckeds > 1) { //当右边选中多个
+                            that.disabled(['bottomBtn', 'topBtn'])
+                        }
+                    } else {
+                        $(this).attr('pitch-of', 'false')
+                        that.rightCheckeds--
+                        if (that.rightCheckeds === 0) {
+                            that.disabled(['leftBtn', 'bottomBtn', 'topBtn'])
+                        }
+                    }
+                   
+                })
+
+                that.$rightBtn.click(function () {
+                    // console.log()
+                    var list = that.$left.find("[pitch-of='true']")
+                    that.$right.append(list.parent())
+                    list.attr("pitch-of", 'false')
+                    list.prop('checked', false)
+                    that.disabled(['rightBtn'])
+                    that.leftCheckeds -= list.length
+                    that.$rightBox.find('.placeholder').hide()
+                    // if(that.leftCheckeds === 0){
+                    //     that.disabled('rightBtn')
+                    // }
+                })
+
+                that.$leftBtn.click(function () {
+                    var list = that.$right.find("[pitch-of='true']")
+                    that.$left.append(list.parent())
+                    list.attr("pitch-of", 'false')
+                    list.prop('checked', false)
+                    that.disabled(['leftBtn', 'bottomBtn', 'topBtn'])
+                    //检测是否已经没有数据了
+                    if(that.$right.children().length === 0){
+                        that.$rightBox.find('.placeholder').show()
+                    }
+                })
+
+                that.$topBtn.click(function () {
+                    var check = that.$right.find("[pitch-of='true']").parent()
+                    var prev = check.prev()
+                    if (prev.length !== 0) {
+                        prev.before(check)
+                    } else {
+                        alert('已经是第一个了')
+                    }
+                })
+
+                that.$bottomBtn.click(function () {
+                    var check = that.$right.find("[pitch-of='true']").parent()
+                    var prev = check.prev()
+                    if (prev.length !== 0) {
+                        prev.after(check)
+                    } else {
+                        alert('已经是最后一个了')
+                    }
+                })
+            },
+            initBtn: function () {
+                this.disabled(['rightBtn', 'leftBtn', 'topBtn', 'bottomBtn'])
+            },
+            //禁用按钮
+            disabled: function (list) {
+                var that = this
+                list.forEach(function (className) {
+                    that['$' + className].attr('disabled', 'disabled')
                 })
             },
 
-            //禁用按钮
-            disabled: function (className) {
-                this['$'+className].attr('disabled', 'disabled')
-            },
-
             //解除禁用
-            removeDisable: function (className) {
-                this['$'+className].removeAttr('disabled')
+            removeDisable: function (list) {
+                var that = this
+                list.forEach(function (className) {
+                    that['$' + className].removeAttr('disabled')
+                })
             },
-
             //item工厂
             createItem: function (name) {
-                var str = `<li><input type="checkbox"/> <span>${name}</span></li>`
+                var str = `<li><input pitch-of="false" type="checkbox"/> <span>${name}</span></li>`
                 return str
             },
             //load
@@ -95,12 +237,15 @@
                 list.forEach(element => {
                     arr.push(this.createItem(element.name))
                 });
-                this['$'+id].append(arr)
+                if (list.length !== 0) {
+                    this['$' + id].append(arr)
+                } else {
+                    this['$' + id].prev('.placeholder').show()
+                }
             }
         }
     })(jQuery)
-    $('#transfer').transfer([
-        {
+    $('#transfer').transfer([{
             name: '王德发'
         },
         {
@@ -112,7 +257,7 @@
         {
             name: '黎明'
         }
-    ])
+    ], [])
 </script>
 
 </html>
