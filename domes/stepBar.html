@@ -1,23 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+        integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <title>Document</title>
 </head>
+<style>
+    .content-box .content-item {
+        display: none;
+    }
+
+    .content-box .active {
+        display: inline-block;
+    }
+    .bar .progress-item{
+        position: relative;
+    }
+    .bar .progress-item.done ::before{
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        width:50%;
+        transition: all 1s;
+        height:5px ;
+        background-color: aqua;
+        top:13px;
+        z-index: -1;
+    }
+    .bar .bulb{
+        display: inline-block;
+        width:30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        background-color: aqua;
+        box-shadow: 0px 0px 0px 10px rgb(0, 255, 255,0.3);
+    }
+    
+</style>
+
 <body>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm">1</div>
-            <div class="col-sm">2</div>
-            <div class="col-sm">3</div>
+        <div id="step-bar">
+            <div class="row bar">
+                <div class="progress-item col-sm text-center done ">
+                    <div class="bulb text-center ">1</div>
+                </div>
+                <div class="progress-item col-sm text-center">
+                    <div class="bulb text-center">2</div>
+                </div>
+                <div class="progress-item col-sm text-center">
+                    <div class="bulb text-center">3</div>
+                </div>
+            </div>
+            <div class="row content-box">
+                <div class="content-item col-sm-12 active">
+                    内容1
+                </div>
+                <div class="content-item col-sm-12">
+                    内容2
+                </div>
+                <div class="content-item col-sm-12">
+                    内容3
+                </div>
+            </div>
+            <div class="row control clearfix">
+                <button class="btn btn-info">上一步</button>
+                <button class="btn btn-info">下一步</button>
+            </div>
         </div>
     </div>
 </body>
 <script src="../frame/jquery.js"></script>
-<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script>
-    
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
 </script>
+<script>
+
+</script>
+
 </html>
